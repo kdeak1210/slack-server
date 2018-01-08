@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import bcrypt from 'bcrypt';
 
+import { tryLogin } from '../auth';
+
 const formatErrors = (e, models) => {
   if (e instanceof models.sequelize.ValidationError) {
     return e.errors.map(x => _.pick(x, ['path', 'message']));
@@ -16,6 +18,7 @@ export default {
   },
 
   Mutation: {
+    login: (parent, { email, password }, { models, SECRET, SECRET2 }) => tryLogin(email, password, models, SECRET, SECRET2),
     register: async (parent, { password, ...otherArgs }, { models }) => {
       try {
         if (password.length < 5 || password.length > 100) {
