@@ -37,14 +37,19 @@ export default {
         };
       }
     }),
+
     createTeam: requiresAuth.createResolver(async (parent, args, { models, user }) => {
       try {
-        const team = await models.Team.create({ ...args, owner: user.id });
-        // general channel create (await prevents race condition)
-        await models.Channel.create({ name: 'general', public: true, teamId: team.id });
+        // Use 'transaction', ensures team not created if error creating 'general' channel
+        const response = await models.sequelize.transaction(async () => {
+          const team = await models.Team.create({ ...args, owner: user.id });
+          await models.Channel.create({ name: 'general', public: true, teamId: team.id });
+          return team;
+        });
+
         return {
           ok: true,
-          team,
+          team: response,
         };
       } catch (err) {
         console.log(err);
