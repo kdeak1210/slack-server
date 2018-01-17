@@ -15,6 +15,7 @@ const models = {
   Channel: sequelize.import('./channel'),
   Message: sequelize.import('./message'),
   Team: sequelize.import('./team'),
+  Member: sequelize.import('./member'),
 };
 
 // Loop through all the models and associate them together

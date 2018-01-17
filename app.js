@@ -73,6 +73,6 @@ app.use(
 app.use('/graphiql', graphiqlExpress({ endpointURL: graphqlEndpoint }));
 
 // sync({ force: true }) to drop the DB.
-models.sequelize.sync({}).then(() => {
+models.sequelize.sync({ }).then(() => {
   app.listen(8080);
 });
