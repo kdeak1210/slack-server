@@ -10,7 +10,7 @@ export default {
         {
           include: [
             {
-              // INCLUDE - find all teams who have a user (currentuser) attached
+              // INCLUDE - find all teams who have the user (currentuser) attached
               model: models.User,
               where: { id: user.id },
             },
