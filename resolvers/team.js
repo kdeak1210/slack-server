@@ -5,19 +5,24 @@ export default {
   Query: {
     allTeams: requiresAuth.createResolver(async (parent, args, { models, user }) =>
       models.Team.findAll({ where: { owner: user.id } }, { raw: true })),
+    // inviteTeams: requiresAuth.createResolver(async (parent, args, { models, user }) =>
+    //   models.Team.findAll(
+    //     {
+    //       include: [
+    //         {
+    //           // INCLUDE - find all teams who have the user (currentuser) attached
+    //           model: models.User,
+    //           where: { id: user.id },
+    //         },
+    //       ],
+    //     },
+    //     { raw: true },
+    //   )),
     inviteTeams: requiresAuth.createResolver(async (parent, args, { models, user }) =>
-      models.Team.findAll(
-        {
-          include: [
-            {
-              // INCLUDE - find all teams who have the user (currentuser) attached
-              model: models.User,
-              where: { id: user.id },
-            },
-          ],
-        },
-        { raw: true },
-      )),
+      models.sequelize.query('select * from teams join members on id = team_id where user_id = ?', {
+        replacements: [user.id], // replaces the '?'s in query string
+        model: models.Team,
+      })),
   },
   Mutation: {
     addTeamMember: requiresAuth.createResolver(async (parent, { email, teamId }, { models, user }) => {
