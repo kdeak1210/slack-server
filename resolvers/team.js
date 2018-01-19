@@ -5,6 +5,19 @@ export default {
   Query: {
     allTeams: requiresAuth.createResolver(async (parent, args, { models, user }) =>
       models.Team.findAll({ where: { owner: user.id } }, { raw: true })),
+    inviteTeams: requiresAuth.createResolver(async (parent, args, { models, user }) =>
+      models.Team.findAll(
+        {
+          include: [
+            {
+              // INCLUDE - find all teams who have a user (currentuser) attached
+              model: models.User,
+              where: { id: user.id },
+            },
+          ],
+        },
+        { raw: true },
+      )),
   },
   Mutation: {
     addTeamMember: requiresAuth.createResolver(async (parent, { email, teamId }, { models, user }) => {

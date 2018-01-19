@@ -16,13 +16,13 @@ export default (sequelize, DataTypes) => {
       },
     });
     // N : M
-    // Channel.belongsToMany(models.User, {
-    //   through: 'channel_member',
-    //   foreignKey: {
-    //     name: 'channelId',
-    //     field: 'channel_id',
-    //   },
-    // });
+    Channel.belongsToMany(models.User, {
+      through: 'channel_member',
+      foreignKey: {
+        name: 'channelId',
+        field: 'channel_id',
+      },
+    });
   };
 
   return Channel;
