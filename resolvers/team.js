@@ -2,6 +2,9 @@ import formatErrors from '../formatErrors';
 import { requiresAuth } from '../permissions';
 
 export default {
+  Team: {
+    channels: ({ id }, args, { models }) => models.Channel.findAll({ where: { teamId: id } }),
+  },
   Query: {
     allTeams: requiresAuth.createResolver(async (parent, args, { models, user }) =>
       models.Team.findAll({ where: { owner: user.id } }, { raw: true })),
@@ -77,8 +80,5 @@ export default {
         };
       }
     }),
-  },
-  Team: {
-    channels: ({ id }, args, { models }) => models.Channel.findAll({ where: { teamId: id } }),
   },
 };
