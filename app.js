@@ -6,7 +6,6 @@ import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import { makeExecutableSchema } from 'graphql-tools';
 import { fileLoader, mergeTypes, mergeResolvers } from 'merge-graphql-schemas';
 import { execute, subscribe } from 'graphql';
-import { PubSub } from 'graphql-subscriptions';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
@@ -14,6 +13,7 @@ import jwt from 'jsonwebtoken';
 import models from './models';
 import { refreshTokens } from './auth';
 
+/* MOVE TO ENVIRONMENT */
 const SECRET = '123123123';
 const SECRET2 = 'abcabcabc';
 
