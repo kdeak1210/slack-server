@@ -11,6 +11,7 @@ export default {
         {
           replacements: [user.id], // replaces the '?'s in query string
           model: models.Team,
+          raw: true,
         },
       ),
   },
