@@ -5,7 +5,7 @@ export default (sequelize, DataTypes) => {
   //
   DirectMessage.associate = (models) => {
     DirectMessage.belongsTo(models.Team, {
-      foriegnKey: {
+      foreignKey: {
         name: 'teamId',
         field: 'team_id',
       },
