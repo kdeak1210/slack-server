@@ -34,6 +34,24 @@ export const requiresTeamAccess = createResolver(async (parents, { channelId }, 
   }
 });
 
+export const directMessageSubscription = createResolver(async (parents, { teamId, userId }, { user, models }) => {
+  if (!user || !user.id) {
+    throw new Error('Not authenticated');
+  }
+
+  // Expecting two members, one w/ userId passed in args, other from token (logged in user)
+  const members = await models.Member.findAll({
+    where: {
+      teamId,
+      [models.sequelize.Op.or]: [{ userId }, { userId: user.id }],
+    },
+  });
+
+  if (members.length !== 2) {
+    throw new Error('Something went wrong - not authorized to DM subscribe');
+  }
+});
+
 export const requiresAdmin = requiresAuth.createResolver((parent, args, context) => {
   if (!context.user.isAdmin) {
     throw new Error('Requires admin access');

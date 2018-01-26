@@ -3,6 +3,7 @@ import _ from 'lodash';
 import bcrypt from 'bcrypt';
 
 export const createTokens = async (user, secret, secret2) => {
+  // The id and username are being stored within the JWT token...
   const createToken = jwt.sign(
     {
       user: _.pick(user, ['id', 'username']),
