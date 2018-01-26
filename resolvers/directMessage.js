@@ -15,7 +15,7 @@ export default {
   },
   Query: {
     // Grabs all the messages that were sent between two users
-    directMessages: async (parent, { teamId, otherUserId }, { models, user }) =>
+    directMessages: requiresAuth.createResolver(async (parent, { teamId, otherUserId }, { models, user }) =>
       models.DirectMessage.findAll(
         {
           order: [['created_at', 'ASC']],
@@ -32,7 +32,7 @@ export default {
           },
         },
         { raw: true },
-      ),
+      )),
   },
   Mutation: {
     createDirectMessage: requiresAuth.createResolver(async (parent, args, { models, user }) => {
