@@ -4,13 +4,16 @@
   "description": "A Slack clone built with GraphQL and React",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
+    "test-server": "./reset_test_db.sh && TEST_DB=testslack nodemon --exec babel-node app.js",
     "start": "nodemon --exec babel-node app.js"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "axios": "^0.17.1",
     "babel-cli": "^6.26.0",
+    "babel-jest": "^22.1.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-stage-3": "^6.24.1",
     "eslint": "^4.14.0",
@@ -19,6 +22,7 @@
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.5.1",
+    "jest": "^22.1.4",
     "nodemon": "^1.14.6"
   },
   "dependencies": {
