@@ -84,10 +84,13 @@ app.use(
   }),
 );
 
+// ex http://localhost:8080/files/B1ACDWhrz-ReactLogo.png
+app.use('/files', express.static('files'));
+
 const server = createServer(app);
 
 // sync({ force: true }) to drop the DB.
-models.sequelize.sync({ force: true }).then(() => {
+models.sequelize.sync({ }).then(() => {
   server.listen(8080, () => {
     // eslint-disable-next-line no-new
     new SubscriptionServer(

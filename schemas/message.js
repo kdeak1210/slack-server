@@ -5,12 +5,12 @@ export default `
 
   type Message {
     id: Int!
-    text: String!
+    text: String
     user: User!
     channel: Channel!
     created_at: String!
     url: String
-    filetype: String
+    mimetype: String
   }
 
   type File {

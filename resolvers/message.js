@@ -12,12 +12,11 @@ import pubsub from '../pubsub';
 const NEW_CHANNEL_MESSAGE = 'NEW_CHANNEL_MESSAGE';
 
 // Specify directory for uploads, and ensure it exists
-const uploadDir = '/files';
-mkdirp.sync(uploadDir);
+mkdirp.sync('./files');
 
 const storeFs = ({ stream, filename }) => {
   const id = shortid.generate();
-  const path = `${uploadDir}/${id}-${filename}`;
+  const path = `files/${id}-${filename}`;
   return new Promise((resolve, reject) => {
     stream
       .on('error', (error) => {
@@ -56,6 +55,8 @@ export default {
     },
   },
   Message: {
+    // If theres a url present, format it so every url passed back to the client has domain name
+    url: parent => (parent.url ? `http://localhost:8080/${parent.url}` : parent.url),
     // Resolve the 'user' field for all messages
     user: ({ user, userId }, args, { models }) => {
       if (user) {
