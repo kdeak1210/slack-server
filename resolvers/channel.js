@@ -24,7 +24,7 @@ export default {
           const channel = await models.Channel.create(args, { transaction });
           if (!args.public) {
             // private channel, create a TABLE to know who is invited to the team
-            // If team creator added themselves on, filter them out then add their id
+            // Filter currentuser out,add back in (member regardless if explicitly added self)
             const members = args.members.filter(m => m !== user.id);
             members.push(user.id);
             const pcmembers = members.map(m => ({ userId: m, channelId: channel.dataValues.id }));

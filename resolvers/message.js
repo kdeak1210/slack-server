@@ -67,11 +67,24 @@ export default {
     },
   },
   Query: {
-    messages: requiresAuth.createResolver(async (parent, { channelId }, { models }) =>
-      models.Message.findAll(
+    messages: requiresAuth.createResolver(async (parent, { channelId }, { models, user }) => {
+      const channel = await models.Channel.findOne({ where: { id: channelId } }, { raw: true });
+
+      if (!channel.public) {
+        const member = await models.PCMember.findOne(
+          { where: { channelId, userId: user.id } },
+          { raw: true },
+        );
+        if (!member) {
+          // non-descriptive error is fine, user'd have to be doing something weird to get here
+          throw new Error('Not Authorized');
+        }
+      }
+      return models.Message.findAll(
         { order: [['created_at', 'ASC']], where: { channelId } },
         { raw: true },
-      )),
+      );
+    }),
   },
   Mutation: {
     createMessage: requiresAuth.createResolver(async (parent, { file, ...args }, { models, user }) => {

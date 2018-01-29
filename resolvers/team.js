@@ -3,16 +3,26 @@ import { requiresAuth } from '../permissions';
 
 export default {
   Team: {
-    channels: ({ id }, args, { models }) => models.Channel.findAll({ where: { teamId: id } }),
-    directMessageMembers: ({ id }, args, { models, user }) =>
-      models.sequelize.query(
-        'select distinct on (u.id) u.id, u.username from users as u join direct_messages as dm on (u.id = dm.sender_id) or (u.id = dm.receiver_id) where (:currentUserId = dm.sender_id or :currentUserId = dm.receiver_id) and dm.team_id = :teamId',
-        {
-          replacements: { currentUserId: user.id, teamId: id },
-          model: models.User,
-          raw: true,
-        },
-      ),
+    channels: ({ id }, args, { models, user }) => models.sequelize.query(
+      `select distinct on (id) * 
+      from channels as c, pcmembers as pc 
+      where c.team_id = :teamId and (c.public = true or (pc.user_id = :userId and c.id = pc.channel_id));`,
+      {
+        replacements: { teamId: id, userId: user.id },
+        model: models.Channel,
+        raw: true,
+      },
+    ),
+    directMessageMembers: ({ id }, args, { models, user }) => models.sequelize.query(
+      `select distinct on (u.id) u.id, u.username 
+      from users as u join direct_messages as dm on (u.id = dm.sender_id) or (u.id = dm.receiver_id) 
+      where (:currentUserId = dm.sender_id or :currentUserId = dm.receiver_id) and dm.team_id = :teamId`,
+      {
+        replacements: { currentUserId: user.id, teamId: id },
+        model: models.User,
+        raw: true,
+      },
+    ),
   },
   Query: {
     teamMembers: requiresAuth.createResolver(async (parents, { teamId }, { models }) =>
