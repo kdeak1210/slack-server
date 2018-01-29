@@ -1,11 +1,49 @@
 import { withFilter } from 'graphql-subscriptions';
+import { GraphQLUpload } from 'apollo-upload-server';
+import { createWriteStream, unlinkSync } from 'fs';
+import mkdirp from 'mkdirp';
+import shortid from 'shortid';
+import Promise from 'bluebird';
 
 import { requiresAuth, requiresTeamAccess } from '../permissions';
 import pubsub from '../pubsub';
 
+// subscription type
 const NEW_CHANNEL_MESSAGE = 'NEW_CHANNEL_MESSAGE';
 
+// Specify directory for uploads, and ensure it exists
+const uploadDir = '/files';
+mkdirp.sync(uploadDir);
+
+const storeFs = ({ stream, filename }) => {
+  const id = shortid.generate();
+  const path = `${uploadDir}/${id}-${filename}`;
+  return new Promise((resolve, reject) => {
+    stream
+      .on('error', (error) => {
+        if (stream.truncated) {
+          // delete the truncated file
+          unlinkSync(path);
+        }
+
+        reject(error);
+      })
+      .on('end', () => resolve({ id, path }))
+      .pipe(createWriteStream(path));
+  });
+};
+
+const processUpload = async (upload) => {
+  const {
+    stream, filename, mimetype,
+    // encoding,
+  } = await upload;
+  const { path } = await storeFs({ stream, filename });
+  return { path, mimetype };
+};
+
 export default {
+  Upload: GraphQLUpload, // Required for apollo-upload
   Subscription: {
     /** newChannelMessage - when pubsub publishes a NEW_CHANNEL_MESSAGE event,
      *  checks if the event's channelId matches its target payload's channelId
@@ -35,10 +73,18 @@ export default {
       )),
   },
   Mutation: {
-    createMessage: requiresAuth.createResolver(async (parent, args, { models, user }) => {
+    createMessage: requiresAuth.createResolver(async (parent, { file, ...args }, { models, user }) => {
       try {
+        const messageData = args;
+        if (file) {
+          const { path, mimetype } = await processUpload(file);
+          console.log(`File uploaded! path: ${path}, mimetype: ${mimetype}`);
+          messageData.url = path;
+          messageData.mimetype = mimetype;
+        }
+
         const message = await models.Message.create({
-          ...args,
+          ...messageData,
           userId: user.id,
         });
 

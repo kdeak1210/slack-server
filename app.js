@@ -7,6 +7,7 @@ import { makeExecutableSchema } from 'graphql-tools';
 import { fileLoader, mergeTypes, mergeResolvers } from 'merge-graphql-schemas';
 import { execute, subscribe } from 'graphql';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
+import { apolloUploadExpress } from 'apollo-upload-server';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
 
@@ -63,6 +64,7 @@ const graphqlEndpoint = '/graphql';
 app.use(
   graphqlEndpoint,
   bodyParser.json(),
+  apolloUploadExpress(),
   graphqlExpress(req => ({
     schema,
     context: {
@@ -85,7 +87,7 @@ app.use(
 const server = createServer(app);
 
 // sync({ force: true }) to drop the DB.
-models.sequelize.sync({ }).then(() => {
+models.sequelize.sync({ force: true }).then(() => {
   server.listen(8080, () => {
     // eslint-disable-next-line no-new
     new SubscriptionServer(

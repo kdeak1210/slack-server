@@ -1,4 +1,7 @@
+/* scalar Upload is required for apollo-upload-server for file uploads */
+
 export default `
+  scalar Upload
 
   type Message {
     id: Int!
@@ -6,6 +9,16 @@ export default `
     user: User!
     channel: Channel!
     created_at: String!
+    url: String
+    filetype: String
+  }
+
+  type File {
+    id: ID!
+    path: String!
+    filename: String!
+    mimetype: String!
+    encoding: String!
   }
 
   type Subscription {
@@ -17,7 +30,7 @@ export default `
   }
 
   type Mutation {
-    createMessage(channelId: Int!, text: String!): Boolean!
+    createMessage(channelId: Int!, text: String, file: Upload): Boolean!
   }
 
 `;
