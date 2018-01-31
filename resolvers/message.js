@@ -56,7 +56,7 @@ export default {
   },
   Message: {
     // If theres a url present, format it so every url passed back to the client has domain name
-    url: parent => (parent.url ? `http://localhost:8080/${parent.url}` : parent.url),
+    url: (parent, args, { serverUrl }) => (parent.url ? `${serverUrl}/${parent.url}` : parent.url),
     // Resolve the 'user' field for all messages
     user: ({ user, userId }, args, { models }) => {
       if (user) {
