@@ -67,7 +67,7 @@ export default {
     },
   },
   Query: {
-    messages: requiresAuth.createResolver(async (parent, { channelId }, { models, user }) => {
+    messages: requiresAuth.createResolver(async (parent, { offset, channelId }, { models, user }) => {
       const channel = await models.Channel.findOne({ where: { id: channelId } }, { raw: true });
 
       if (!channel.public) {
@@ -80,8 +80,12 @@ export default {
           throw new Error('Not Authorized');
         }
       }
+
       return models.Message.findAll(
-        { order: [['created_at', 'ASC']], where: { channelId } },
+        // Added a hardcoded limit, can also be passed in as param to Query
+        {
+          order: [['created_at', 'ASC']], where: { channelId }, limit: 35, offset,
+        },
         { raw: true },
       );
     }),
