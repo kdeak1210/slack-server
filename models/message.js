@@ -3,6 +3,13 @@ export default (sequelize, DataTypes) => {
     text: DataTypes.STRING,
     url: DataTypes.STRING,
     mimetype: DataTypes.STRING,
+  }, {
+    indexes: [
+      {
+        unique: false,
+        fields: ['created_at'],
+      },
+    ],
   });
 
   Message.associate = (models) => {

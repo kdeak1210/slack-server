@@ -67,7 +67,7 @@ export default {
     },
   },
   Query: {
-    messages: requiresAuth.createResolver(async (parent, { offset, channelId }, { models, user }) => {
+    messages: requiresAuth.createResolver(async (parent, { cursor, channelId }, { models, user }) => {
       const channel = await models.Channel.findOne({ where: { id: channelId } }, { raw: true });
 
       if (!channel.public) {
@@ -81,13 +81,20 @@ export default {
         }
       }
 
-      return models.Message.findAll(
-        // Added a hardcoded limit, can also be passed in as param to Query
-        {
-          order: [['created_at', 'ASC']], where: { channelId }, limit: 35, offset,
-        },
-        { raw: true },
-      );
+      const options = {
+        order: [['created_at', 'DESC']],
+        where: { channelId },
+        limit: 35,
+      };
+
+      if (cursor) {
+        // Given a cursor (date), find all elements after the cursor (created_at lt cursor?)
+        options.where.created_at = {
+          [models.sequelize.Op.lt]: cursor,
+        };
+      }
+
+      return models.Message.findAll(options, { raw: true });
     }),
   },
   Mutation: {
