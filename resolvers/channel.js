@@ -17,7 +17,7 @@ export default {
       const allMembers = [...members, user.id]; // all their id's
       // check if dm channel already exists with these members (Note: @> in psql means 'contains')
       const [data, result] = await models.sequelize.query(`
-        select c.id 
+        select c.id, c.name
         from channels as c, pcmembers pc 
         where pc.channel_id = c.id and c.dm = true and c.public = false and c.team_id = ${teamId}
         group by c.id 
@@ -27,7 +27,7 @@ export default {
       console.log(data, result);
 
       if (data.length) {
-        // If we have data, grab the id from the first one and thats our channel
+        // If we have data, return the first channel from query (it already exists w those members)
         return data[0];
       }
 
