@@ -3,18 +3,9 @@ import { requiresAuth } from '../permissions';
 
 export default {
   Team: {
-    channels: ({ id }, args, { models, user }) => models.sequelize.query(
-      `select distinct on (id) * 
-      from channels as c 
-      left outer join pcmembers as pc 
-      on c.id = pc.channel_id
-      where c.team_id = :teamId and (c.public = true or pc.user_id = :userId);`,
-      {
-        replacements: { teamId: id, userId: user.id },
-        model: models.Channel,
-        raw: true,
-      },
-    ),
+    channels: ({ id }, args, { channelLoader }) =>
+      // Getting id from parents, then calls channelLoader on teams 1, 2, 3, 4 ... etc
+      channelLoader.load(id),
     directMessageMembers: ({ id }, args, { models, user }) => models.sequelize.query(
       `select distinct on (u.id) u.id, u.username 
       from users as u 

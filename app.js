@@ -2,17 +2,19 @@ import { createServer } from 'http';
 import path from 'path';
 import express from 'express';
 import bodyParser from 'body-parser';
+import cors from 'cors';
+import jwt from 'jsonwebtoken';
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import { makeExecutableSchema } from 'graphql-tools';
 import { fileLoader, mergeTypes, mergeResolvers } from 'merge-graphql-schemas';
 import { execute, subscribe } from 'graphql';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { apolloUploadExpress } from 'apollo-upload-server';
-import cors from 'cors';
-import jwt from 'jsonwebtoken';
+import DataLoader from 'dataloader';
 
 import models from './models';
 import { refreshTokens } from './auth';
+import { channelBatcher } from './batchFunctions';
 
 /* MOVE TO ENVIRONMENT */
 const SECRET = '123123123';
@@ -72,6 +74,7 @@ app.use(
       user: req.user, // from the addUser middleware
       SECRET,
       SECRET2,
+      channelLoader: new DataLoader(ids => channelBatcher(ids, models, req.user)),
     },
   })),
 );
