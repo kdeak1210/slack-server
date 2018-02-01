@@ -5,6 +5,7 @@ const sequelize = new Sequelize(process.env.TEST_DB || 'slack', 'postgres', 'pos
   dialect: 'postgres',
   protocol: 'postgres',
   operatorsAliases: Sequelize.Op,
+  host: process.env.DB_HOST || 'localhost', // by default looks for localhost
   define: {
     underscored: true,
   },
