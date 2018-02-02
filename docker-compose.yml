@@ -23,6 +23,9 @@ services:
     environment:
       DB_HOST: db
       REDIS_HOST: redis
+    volumes:
+      # Persist uploaded files. /app bc its the WORKDIR specified in dockerfile
+      - ./files:/app/files
     depends_on:
       - db
       - redis
@@ -32,6 +35,7 @@ services:
     image: nginx
     volumes:
       - ./mysite.template:/etc/nginx/conf.d/mysite.template
+      - ./files:/files
     ports:
     # 8080 because our React app expects it, 80 listening default in container
       - "8080:80"
