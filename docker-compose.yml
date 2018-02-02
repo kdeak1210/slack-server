@@ -17,7 +17,7 @@ services:
     ports:
       - "3030:5432"
   web:
-    image: slack-clone-server
+    image: kdeak1210/slack-clone-server:latest
     networks:
       - webnet
     environment:
@@ -37,8 +37,8 @@ services:
       - ./mysite.template:/etc/nginx/conf.d/mysite.template
       - ./files:/files
     ports:
-    # 8080 because our React app expects it, 80 listening default in container
-      - "8080:80"
+    # 80 port expected : 80 listening default in container
+      - "80:80"
     networks:
       - webnet
     depends_on:
