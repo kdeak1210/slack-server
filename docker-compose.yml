@@ -21,7 +21,7 @@ services:
     environment:
       DB_HOST: db
       REDIS_HOST: redis
-      SERVER_HOST: ec2-18-219-54-77.us-east-2.compute.amazonaws.com
+      SERVER_HOST: http://ec2-18-219-54-77.us-east-2.compute.amazonaws.com
     volumes:
       # Persist uploaded files. /app bc its the WORKDIR specified in dockerfile
       - ./files:/app/files

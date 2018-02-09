@@ -56,7 +56,16 @@ export default {
   },
   Message: {
     // If theres a url present, format it so every url passed back to the client has domain name
-    url: parent => (parent.url ? `${process.env.SERVER_HOST || 'http://localhost:8080'}/${parent.url}` : parent.url),
+    url: (parent) => {
+      if (!parent.url) {
+        return parent.url;
+      }
+      const host = process.env.SERVER_HOST || 'http://localhost:8080';
+      console.log(host);
+      const fullUrl = `${host}/${parent.url}`;
+      console.log(fullUrl);
+      return fullUrl;
+    },
     // Resolve the 'user' field for all messages
     user: ({ user, userId }, args, { models }) => {
       if (user) {
